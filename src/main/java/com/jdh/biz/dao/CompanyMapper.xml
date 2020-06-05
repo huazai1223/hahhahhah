@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jdh.biz.dao.CompanyMapper">
+	<insert id="inserts">
+		insert into biz_company(name,corporation,address,capital,regist_no,tid,period,created)
+			values
+			(#{name},#{corporation},#{address},#{capital},#{regist_no},#{tid},#{period},#{created})
+	</insert>
+	<resultMap type="Company" id="companyMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="corporation" property="corporation"/>
+		<result column="address" property="address"/>
+		<result column="capital" property="capital"/>
+		<result column="regist_no" property="regist_no"/>
+		<result column="tid" property="tid"/>
+		<result column="period" property="period"/>
+		<result column="created" property="created"/>
+		<association property="type" javaType="Type">
+			<id column="tid" property="tid"/>
+			<result column="tname" property="tname"/>
+		</association>
+	</resultMap>
+	<select id="selectList" resultMap="companyMap">
+		SELECT c.*,t.tname FROM biz_company c LEFT JOIN biz_type t ON (c.tid=t.tid)
+		<where>
+			<if test="capitalStart!=null">
+				 capital>=#{capitalStart}
+			</if>
+			<if test="capitalEnd!=null">
+				 and capital &lt;=#{capitalEnd}
+			</if>
+			<if test="mtype!=null and mtype!='' and mtype!='qt'">
+				 and c.tid=#{mtype}
+			</if>
+			<if test="mtype!=null and mtype=='' and mtype!='qt'">
+				 and c.tid not in (1,2,3)
+			</if>
+		</where>
+	</select>
+</mapper>
